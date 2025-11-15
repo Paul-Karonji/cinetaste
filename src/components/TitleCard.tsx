@@ -2,7 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { Star } from 'lucide-react';
 import { tmdb } from '@/lib/tmdb';
+import { useState } from 'react';
 
 interface TitleCardProps {
   id: number;
@@ -11,6 +13,7 @@ interface TitleCardProps {
   releaseDate?: string;
   rating?: number;
   mediaType?: 'movie' | 'tv';
+  size?: 'normal' | 'hero';
   onClick?: () => void;
 }
 
@@ -21,64 +24,60 @@ export default function TitleCard({
   releaseDate,
   rating,
   mediaType = 'movie',
+  size = 'normal',
   onClick,
 }: TitleCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
   const year = releaseDate ? new Date(releaseDate).getFullYear() : null;
   const imageUrl = tmdb.getImageUrl(posterPath);
+
+  const dimensions = size === 'hero'
+    ? { width: 300, height: 450 }
+    : { width: 180, height: 270 };
 
   return (
     <div
       onClick={onClick}
-      className="group relative overflow-hidden rounded-lg bg-secondary card-hover cursor-pointer"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative group cursor-pointer"
+      style={{
+        width: `${dimensions.width}px`,
+        height: `${dimensions.height}px`,
+      }}
     >
       <Link href={`/title/${mediaType}/${id}`}>
-        <div className="aspect-[2/3] relative">
+        <div
+          className="w-full h-full rounded-lg overflow-hidden transition-all duration-300"
+          style={{
+            backgroundColor: '#221F1F',
+            transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+            boxShadow: isHovered ? '0 0 20px rgba(229, 9, 20, 0.4)' : 'none',
+          }}
+        >
           <Image
             src={imageUrl}
             alt={title}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+            sizes={size === 'hero' ? '300px' : '180px'}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-          {/* Rating Badge */}
-          {rating && (
-            <div className="absolute top-2 right-2 bg-primary/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs font-semibold">
-              ⭐ {rating.toFixed(1)}
-            </div>
-          )}
-
-          {/* Hover Overlay */}
-          <div className="absolute inset-0 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="w-full">
-              <h3 className="text-accent font-semibold text-sm mb-1 line-clamp-2">
-                {title}
-              </h3>
-              {year && (
-                <p className="text-accent/60 text-xs">{year}</p>
-              )}
-            </div>
+        </div>
+        <div
+          className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#121212] to-transparent transition-opacity duration-200"
+          style={{ opacity: isHovered ? 1 : 0 }}
+        >
+          <h3 className="font-medium mb-1" style={{ color: '#F5F5F5', fontSize: '15px' }}>
+            {title}
+          </h3>
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 fill-current" style={{ color: '#E50914' }} />
+            <span className="text-sm" style={{ color: '#F5F5F5', opacity: 0.9 }}>
+              {rating ? rating.toFixed(1) : 'N/A'}
+            </span>
           </div>
         </div>
       </Link>
-
-      {/* Quick Actions */}
-      <div className="absolute top-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex gap-2">
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            // Add to watchlist logic
-          }}
-          className="p-2 bg-background/80 backdrop-blur-sm rounded-full hover:bg-primary transition-colors"
-          title="Add to Watchlist"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </button>
-      </div>
     </div>
   );
 }

@@ -3,19 +3,19 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { Film, Plus, Clock, TrendingUp, BarChart3, Users, Search, Settings } from 'lucide-react';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/watchlist', label: 'My Watchlist' },
-    { href: '/history', label: 'History' },
-    { href: '/explore', label: 'Explore' },
-    { href: '/mood', label: 'Mood Picker' },
-    { href: '/stats', label: 'Stats' },
-    { href: '/friends', label: 'Friends' },
+    { href: '/', label: 'Home', icon: Film },
+    { href: '/watchlist', label: 'MyWatch', icon: Plus },
+    { href: '/history', label: 'History', icon: Clock },
+    { href: '/mood', label: 'Mood', icon: TrendingUp },
+    { href: '/stats', label: 'Stats', icon: BarChart3 },
+    { href: '/friends', label: 'Friends', icon: Users },
   ];
 
   const isActive = (href: string) => {
@@ -24,90 +24,106 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-secondary border-b border-accent/10 sticky top-0 z-50 backdrop-blur-sm bg-secondary/95">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
-            <div className="text-2xl font-bold bg-gradient-to-r from-primary to-highlight bg-clip-text text-transparent">
-              CineTaste
-            </div>
+    <nav className="fixed top-0 left-0 right-0 z-50" style={{ backgroundColor: '#121212', borderBottom: '1px solid #221F1F' }}>
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        {/* Logo */}
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2">
+            <Film className="w-8 h-8" style={{ color: '#E50914' }} />
+            <span className="text-2xl font-bold" style={{ color: '#F5F5F5' }}>CineTaste</span>
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`px-4 py-2 rounded-lg transition-all duration-200 ${
-                  isActive(link.href)
-                    ? 'bg-primary text-accent font-semibold'
-                    : 'text-accent/70 hover:text-accent hover:bg-secondary/50'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="hidden md:flex gap-6">
+            {navLinks.map((link) => {
+              const Icon = link.icon;
+              const active = isActive(link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all"
+                  style={{
+                    backgroundColor: active ? '#221F1F' : 'transparent',
+                    color: active ? '#E50914' : '#F5F5F5',
+                    opacity: active ? 1 : 0.8,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (!active) {
+                      e.currentTarget.style.color = '#E50914';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!active) {
+                      e.currentTarget.style.color = '#F5F5F5';
+                    }
+                  }}
+                >
+                  <Icon className="w-5 h-5" />
+                  <span className="font-medium">{link.label}</span>
+                </Link>
+              );
+            })}
           </div>
-
-          {/* User Menu */}
-          <div className="hidden md:flex items-center space-x-4">
-            <button className="text-accent/70 hover:text-accent transition-colors">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </button>
-            <Link
-              href="/profile"
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-highlight flex items-center justify-center text-accent font-semibold"
-            >
-              U
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-accent p-2"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              {isMenuOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 space-y-2">
-            {navLinks.map((link) => (
+        {/* User Menu */}
+        <div className="hidden md:flex items-center gap-4">
+          <Search
+            className="w-5 h-5 cursor-pointer transition-colors"
+            style={{ color: '#F5F5F5', opacity: 0.8 }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#E50914'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#F5F5F5'}
+          />
+          <Settings
+            className="w-5 h-5 cursor-pointer transition-colors"
+            style={{ color: '#F5F5F5', opacity: 0.8 }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#E50914'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#F5F5F5'}
+          />
+        </div>
+
+        {/* Mobile Menu Button */}
+        <button
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="md:hidden p-2"
+          style={{ color: '#F5F5F5' }}
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {isMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="md:hidden px-6 py-4 space-y-2" style={{ backgroundColor: '#121212' }}>
+          {navLinks.map((link) => {
+            const Icon = link.icon;
+            const active = isActive(link.href);
+            return (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsMenuOpen(false)}
-                className={`block px-4 py-2 rounded-lg transition-colors ${
-                  isActive(link.href)
-                    ? 'bg-primary text-accent font-semibold'
-                    : 'text-accent/70 hover:text-accent hover:bg-secondary/50'
-                }`}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg transition-colors"
+                style={{
+                  backgroundColor: active ? '#221F1F' : 'transparent',
+                  color: active ? '#E50914' : '#F5F5F5',
+                  opacity: active ? 1 : 0.8,
+                }}
               >
+                <Icon className="w-5 h-5" />
                 {link.label}
               </Link>
-            ))}
-            <Link
-              href="/profile"
-              onClick={() => setIsMenuOpen(false)}
-              className="block px-4 py-2 rounded-lg text-accent/70 hover:text-accent hover:bg-secondary/50"
-            >
-              Profile
-            </Link>
-          </div>
-        )}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </nav>
   );
 }

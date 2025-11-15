@@ -11,7 +11,7 @@
  */
 
 import { db as supabaseDb } from './supabase-client';
-import prisma from './prisma';
+import { prisma } from './prisma';
 
 /**
  * Determine which database client to use

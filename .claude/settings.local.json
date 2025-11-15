@@ -10,7 +10,8 @@
       "Bash(npx prisma migrate diff:*)",
       "Bash(node test-database.js:*)",
       "Bash(npm install:*)",
-      "Bash(node test-supabase.js:*)"
+      "Bash(node test-supabase.js:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

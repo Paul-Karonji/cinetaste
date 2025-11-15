@@ -1,0 +1,357 @@
+import React, { useState } from 'react';
+import { Film, Clock, TrendingUp, BarChart3, Users, Settings, Search, Play, Star, Plus, Check } from 'lucide-react';
+
+const CineTasteMockups = () => {
+  const [activeScreen, setActiveScreen] = useState('home');
+  const [hoveredMovie, setHoveredMovie] = useState(null);
+
+  // Sample movie data
+  const movies = [
+    { id: 1, title: 'Inception', rating: 4.5, poster: 'https://image.tmdb.org/t/p/w500/9gk7adHYeDvHkCSEqAvQNLV5Uge.jpg' },
+    { id: 2, title: 'The Dark Knight', rating: 5, poster: 'https://image.tmdb.org/t/p/w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg' },
+    { id: 3, title: 'Interstellar', rating: 4.8, poster: 'https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg' },
+    { id: 4, title: 'Parasite', rating: 4.7, poster: 'https://image.tmdb.org/t/p/w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg' },
+    { id: 5, title: 'Dune', rating: 4.3, poster: 'https://image.tmdb.org/t/p/w500/d5NXSklXo0qyIYkgV94XAgMIckC.jpg' },
+  ];
+
+  const moods = [
+    { name: 'Happy', color: 'rgba(255, 200, 87, 0.3)', icon: '😊' },
+    { name: 'Sad', color: 'rgba(100, 150, 230, 0.3)', icon: '😢' },
+    { name: 'Thrilling', color: 'rgba(229, 9, 20, 0.3)', icon: '😱' },
+    { name: 'Romantic', color: 'rgba(255, 150, 180, 0.3)', icon: '💕' },
+  ];
+
+  const Navigation = () => (
+    <nav className="fixed top-0 left-0 right-0 bg-[#121212] border-b border-[#221F1F] z-50">
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-2">
+            <Film className="w-8 h-8" style={{ color: '#E50914' }} />
+            <span className="text-2xl font-bold" style={{ color: '#F5F5F5' }}>CineTaste</span>
+          </div>
+          <div className="flex gap-6">
+            {[
+              { id: 'home', icon: Film, label: 'Home' },
+              { id: 'watchlist', icon: Plus, label: 'MyWatch' },
+              { id: 'history', icon: Clock, label: 'History' },
+              { id: 'mood', icon: TrendingUp, label: 'Mood' },
+              { id: 'stats', icon: BarChart3, label: 'Stats' },
+              { id: 'friends', icon: Users, label: 'Friends' },
+            ].map(item => (
+              <button
+                key={item.id}
+                onClick={() => setActiveScreen(item.id)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg transition-all"
+                style={{
+                  backgroundColor: activeScreen === item.id ? '#221F1F' : 'transparent',
+                  color: activeScreen === item.id ? '#E50914' : '#F5F5F5',
+                  opacity: activeScreen === item.id ? 1 : 0.8,
+                }}
+                onMouseEnter={(e) => {
+                  if (activeScreen !== item.id) {
+                    e.currentTarget.style.color = '#E50914';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeScreen !== item.id) {
+                    e.currentTarget.style.color = '#F5F5F5';
+                  }
+                }}
+              >
+                <item.icon className="w-5 h-5" />
+                <span className="font-medium">{item.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center gap-4">
+          <Search className="w-5 h-5 cursor-pointer transition-colors" style={{ color: '#F5F5F5', opacity: 0.8 }} 
+            onMouseEnter={(e) => e.currentTarget.style.color = '#E50914'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#F5F5F5'}
+          />
+          <Settings className="w-5 h-5 cursor-pointer transition-colors" style={{ color: '#F5F5F5', opacity: 0.8 }}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#E50914'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#F5F5F5'}
+          />
+        </div>
+      </div>
+    </nav>
+  );
+
+  const MovieCard = ({ movie, size = 'normal' }) => (
+    <div
+      className="relative group cursor-pointer"
+      onMouseEnter={() => setHoveredMovie(movie.id)}
+      onMouseLeave={() => setHoveredMovie(null)}
+      style={{
+        width: size === 'hero' ? '300px' : '180px',
+        height: size === 'hero' ? '450px' : '270px',
+      }}
+    >
+      <div
+        className="w-full h-full rounded-lg overflow-hidden transition-all duration-300"
+        style={{
+          backgroundColor: '#221F1F',
+          transform: hoveredMovie === movie.id ? 'scale(1.03)' : 'scale(1)',
+          boxShadow: hoveredMovie === movie.id ? '0 0 20px rgba(229, 9, 20, 0.4)' : 'none',
+        }}
+      >
+        <img
+          src={movie.poster}
+          alt={movie.title}
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <div 
+        className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#121212] to-transparent transition-opacity duration-200"
+        style={{ opacity: hoveredMovie === movie.id ? 1 : 0 }}
+      >
+        <h3 className="font-medium mb-1" style={{ color: '#F5F5F5', fontSize: '15px' }}>{movie.title}</h3>
+        <div className="flex items-center gap-1">
+          <Star className="w-4 h-4 fill-current" style={{ color: '#E50914' }} />
+          <span className="text-sm" style={{ color: '#F5F5F5', opacity: 0.9 }}>{movie.rating}</span>
+        </div>
+      </div>
+    </div>
+  );
+
+  const HomeScreen = () => (
+    <div className="space-y-8">
+      {/* Hero Section */}
+      <div className="relative h-[500px] rounded-xl overflow-hidden">
+        <img
+          src="https://image.tmdb.org/t/p/original/4XM8DUTQb3lhLemJC51Jx4a2EuA.jpg"
+          alt="Hero"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#121212] via-[#121212]/80 to-transparent">
+          <div className="h-full flex flex-col justify-center px-12 max-w-2xl">
+            <h1 className="text-5xl font-bold mb-4" style={{ color: '#F5F5F5' }}>Inception</h1>
+            <p className="text-lg mb-6" style={{ color: '#F5F5F5', opacity: 0.8, lineHeight: '1.6' }}>
+              A thief who steals corporate secrets through dream-sharing technology is given the inverse task of planting an idea.
+            </p>
+            <div className="flex gap-4">
+              <button 
+                className="px-8 py-3 rounded-lg font-medium transition-colors flex items-center gap-2"
+                style={{ backgroundColor: '#E50914', color: '#F5F5F5' }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#B81D24'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#E50914'}
+              >
+                <Play className="w-5 h-5" />
+                Watch Now
+              </button>
+              <button 
+                className="px-8 py-3 rounded-lg font-medium transition-all flex items-center gap-2"
+                style={{ backgroundColor: '#221F1F', color: '#F5F5F5', border: '1px solid #B81D24' }}
+                onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.2)'}
+                onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
+              >
+                <Plus className="w-5 h-5" />
+                Add to List
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Continue Watching */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4" style={{ color: '#F5F5F5' }}>Continue Watching</h2>
+        <div className="flex gap-5 overflow-x-auto pb-4">
+          {movies.slice(0, 4).map(movie => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </div>
+
+      {/* Top Picks */}
+      <div>
+        <h2 className="text-2xl font-bold mb-4" style={{ color: '#F5F5F5' }}>Top Picks For You</h2>
+        <div className="flex gap-5 overflow-x-auto pb-4">
+          {movies.map(movie => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const WatchlistScreen = () => (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-4xl font-bold" style={{ color: '#F5F5F5' }}>My Watchlist</h1>
+        <div className="flex gap-3">
+          {['Filter', 'Sort'].map(label => (
+            <button 
+              key={label}
+              className="px-4 py-2 rounded-lg transition-all"
+              style={{ backgroundColor: '#221F1F', color: '#F5F5F5', border: '1px solid #B81D24', opacity: 0.9 }}
+              onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.2)'}
+              onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-5 gap-5">
+        {movies.map(movie => (
+          <MovieCard key={movie.id} movie={movie} />
+        ))}
+      </div>
+    </div>
+  );
+
+  const HistoryScreen = () => (
+    <div>
+      <h1 className="text-4xl font-bold mb-6" style={{ color: '#F5F5F5' }}>Watch History</h1>
+      <div className="space-y-6">
+        {movies.slice(0, 3).map((movie, idx) => (
+          <div key={movie.id} className="flex gap-6 p-6 rounded-xl" style={{ backgroundColor: '#221F1F' }}>
+            <img
+              src={movie.poster}
+              alt={movie.title}
+              className="w-32 h-48 object-cover rounded-lg"
+            />
+            <div className="flex-1">
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-2xl font-bold mb-2" style={{ color: '#F5F5F5' }}>{movie.title}</h3>
+                  <p className="mb-4" style={{ color: '#F5F5F5', opacity: 0.7, fontSize: '15px' }}>
+                    Watched on November {15 - idx}, 2025
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-lg" style={{ backgroundColor: '#121212' }}>
+                  <Star className="w-5 h-5 fill-current" style={{ color: '#E50914' }} />
+                  <span className="font-bold" style={{ color: '#F5F5F5' }}>{movie.rating}</span>
+                </div>
+              </div>
+              <p style={{ color: '#F5F5F5', opacity: 0.75, lineHeight: '1.6', fontSize: '15px' }}>
+                An incredible cinematic experience that left me speechless. The visuals, story, and performances were all top-tier.
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const MoodScreen = () => (
+    <div>
+      <h1 className="text-4xl font-bold mb-3" style={{ color: '#F5F5F5' }}>How Are You Feeling?</h1>
+      <p className="mb-8 text-lg" style={{ color: '#F5F5F5', opacity: 0.7 }}>
+        Select your mood and discover perfect recommendations
+      </p>
+      <div className="grid grid-cols-2 gap-6 mb-8">
+        {moods.map(mood => (
+          <button
+            key={mood.name}
+            className="p-8 rounded-xl border transition-all"
+            style={{
+              backgroundColor: '#221F1F',
+              borderColor: '#221F1F',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = '#B81D24';
+              e.currentTarget.style.boxShadow = `0 0 30px ${mood.color}`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#221F1F';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
+          >
+            <div className="text-6xl mb-4">{mood.icon}</div>
+            <h3 className="text-2xl font-bold" style={{ color: '#F5F5F5' }}>{mood.name}</h3>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const StatsScreen = () => (
+    <div>
+      <h1 className="text-4xl font-bold mb-8" style={{ color: '#F5F5F5' }}>Your Stats</h1>
+      <div className="grid grid-cols-3 gap-6 mb-8">
+        {[
+          { label: 'Movies Watched', value: '247', icon: Film },
+          { label: 'Hours Watched', value: '412', icon: Clock },
+          { label: 'Average Rating', value: '4.2', icon: Star },
+        ].map(stat => (
+          <div key={stat.label} className="p-6 rounded-xl" style={{ backgroundColor: '#221F1F' }}>
+            <stat.icon className="w-8 h-8 mb-3" style={{ color: '#E50914' }} />
+            <div className="text-4xl font-bold mb-2" style={{ color: '#F5F5F5' }}>{stat.value}</div>
+            <div style={{ color: '#F5F5F5', opacity: 0.7, fontSize: '15px' }}>{stat.label}</div>
+          </div>
+        ))}
+      </div>
+      <div className="p-6 rounded-xl" style={{ backgroundColor: '#221F1F' }}>
+        <h2 className="text-2xl font-bold mb-6" style={{ color: '#F5F5F5' }}>Monthly Activity</h2>
+        <div className="h-64 flex items-end justify-around gap-2">
+          {[65, 45, 80, 55, 90, 70, 85, 60, 75, 95, 70, 80].map((height, idx) => (
+            <div key={idx} className="flex-1 flex flex-col items-center gap-2">
+              <div
+                className="w-full rounded-t transition-all"
+                style={{ 
+                  height: `${height}%`,
+                  backgroundColor: '#E50914'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.filter = 'brightness(1.2)'}
+                onMouseLeave={(e) => e.currentTarget.style.filter = 'brightness(1)'}
+              />
+              <span className="text-xs" style={{ color: '#F5F5F5', opacity: 0.5 }}>{idx + 1}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  const FriendsScreen = () => (
+    <div>
+      <h1 className="text-4xl font-bold mb-6" style={{ color: '#F5F5F5' }}>Friends</h1>
+      <div className="grid grid-cols-3 gap-6">
+        {['Alice', 'Bob', 'Charlie', 'Diana'].map((name, idx) => (
+          <div key={name} className="p-6 rounded-xl" style={{ backgroundColor: '#221F1F' }}>
+            <div className="flex items-center gap-4 mb-4">
+              <div 
+                className="w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold"
+                style={{
+                  backgroundColor: idx < 2 ? '#E50914' : '#121212',
+                  color: '#F5F5F5',
+                  boxShadow: idx < 2 ? '0 0 0 4px rgba(229, 9, 20, 0.3)' : 'none'
+                }}
+              >
+                {name[0]}
+              </div>
+              <div>
+                <h3 className="text-xl font-bold" style={{ color: '#F5F5F5' }}>{name}</h3>
+                <p className="text-sm" style={{ color: '#F5F5F5', opacity: 0.6 }}>
+                  {idx < 2 ? 'Online' : 'Offline'}
+                </p>
+              </div>
+            </div>
+            <div className="text-sm" style={{ color: '#F5F5F5', opacity: 0.7 }}>
+              {Math.floor(Math.random() * 100 + 50)} movies watched
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen" style={{ backgroundColor: '#121212' }}>
+      <Navigation />
+      <main className="max-w-7xl mx-auto px-6 pt-24 pb-12">
+        {activeScreen === 'home' && <HomeScreen />}
+        {activeScreen === 'watchlist' && <WatchlistScreen />}
+        {activeScreen === 'history' && <HistoryScreen />}
+        {activeScreen === 'mood' && <MoodScreen />}
+        {activeScreen === 'stats' && <StatsScreen />}
+        {activeScreen === 'friends' && <FriendsScreen />}
+      </main>
+    </div>
+  );
+};
+
+export default CineTasteMockups;

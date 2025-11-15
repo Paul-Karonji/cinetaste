@@ -1,99 +1,81 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Container from '@/components/Container';
+import { Film, Clock, Star } from 'lucide-react';
 
 export default function StatsPage() {
-  const [stats, setStats] = useState({
-    totalWatched: 0,
-    totalHours: 0,
-    favoriteGenres: [] as { genre: string; count: number }[],
-    topRated: [] as any[],
-    monthlyActivity: [] as { month: string; count: number }[],
-    bingeStreak: 0,
-  });
+  const stats = [
+    { label: 'Movies Watched', value: '247', icon: Film },
+    { label: 'Hours Watched', value: '412', icon: Clock },
+    { label: 'Average Rating', value: '4.2', icon: Star },
+  ];
+
+  const monthlyData = [65, 45, 80, 55, 90, 70, 85, 60, 75, 95, 70, 80];
 
   return (
     <Container>
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Your Stats</h1>
-        <p className="text-accent/70">
-          Insights about your watching habits and preferences
-        </p>
-      </div>
+      <h1 className="text-4xl font-bold mb-8" style={{ color: '#F5F5F5' }}>
+        Your Stats
+      </h1>
 
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-3 gap-6 mb-12">
-        <div className="bg-secondary p-6 rounded-lg border border-accent/10">
-          <div className="text-primary text-3xl font-bold mb-2">
-            {stats.totalWatched}
-          </div>
-          <div className="text-accent/70">Titles Watched</div>
-        </div>
-
-        <div className="bg-secondary p-6 rounded-lg border border-accent/10">
-          <div className="text-primary text-3xl font-bold mb-2">
-            {stats.totalHours}h
-          </div>
-          <div className="text-accent/70">Total Hours</div>
-        </div>
-
-        <div className="bg-secondary p-6 rounded-lg border border-accent/10">
-          <div className="text-primary text-3xl font-bold mb-2">
-            {stats.bingeStreak} days
-          </div>
-          <div className="text-accent/70">Longest Streak</div>
-        </div>
+      <div className="grid grid-cols-3 gap-6 mb-8">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={stat.label}
+              className="p-6 rounded-xl"
+              style={{ backgroundColor: '#221F1F' }}
+            >
+              <Icon className="w-8 h-8 mb-3" style={{ color: '#E50914' }} />
+              <div
+                className="text-4xl font-bold mb-2"
+                style={{ color: '#F5F5F5' }}
+              >
+                {stat.value}
+              </div>
+              <div style={{ color: '#F5F5F5', opacity: 0.7, fontSize: '15px' }}>
+                {stat.label}
+              </div>
+            </div>
+          );
+        })}
       </div>
 
-      {/* Favorite Genres */}
-      <div className="bg-secondary p-6 rounded-lg border border-accent/10 mb-8">
-        <h2 className="text-2xl font-bold mb-4">Favorite Genres</h2>
-        {stats.favoriteGenres.length === 0 ? (
-          <p className="text-accent/70">Start watching to discover your favorite genres!</p>
-        ) : (
-          <div className="space-y-3">
-            {stats.favoriteGenres.map((genre, index) => (
-              <div key={genre.genre} className="flex items-center gap-4">
-                <div className="text-primary font-bold text-lg w-8">{index + 1}</div>
-                <div className="flex-1">
-                  <div className="flex justify-between mb-1">
-                    <span className="font-semibold">{genre.genre}</span>
-                    <span className="text-accent/70">{genre.count} titles</span>
-                  </div>
-                  <div className="w-full bg-background h-2 rounded-full overflow-hidden">
-                    <div
-                      className="bg-primary h-full rounded-full"
-                      style={{ width: `${(genre.count / stats.totalWatched) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Monthly Activity */}
-      <div className="bg-secondary p-6 rounded-lg border border-accent/10">
-        <h2 className="text-2xl font-bold mb-4">Monthly Activity</h2>
-        {stats.monthlyActivity.length === 0 ? (
-          <p className="text-accent/70">Your monthly activity will appear here!</p>
-        ) : (
-          <div className="space-y-2">
-            {/* Simple bar chart representation */}
-            {stats.monthlyActivity.map((month) => (
-              <div key={month.month} className="flex items-center gap-4">
-                <div className="w-24 text-accent/70">{month.month}</div>
-                <div className="flex-1">
-                  <div className="bg-primary h-6 rounded" style={{ width: `${month.count * 10}%` }}>
-                    <span className="px-2 text-sm">{month.count}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+      {/* Monthly Activity Chart */}
+      <div className="p-6 rounded-xl" style={{ backgroundColor: '#221F1F' }}>
+        <h2 className="text-2xl font-bold mb-6" style={{ color: '#F5F5F5' }}>
+          Monthly Activity
+        </h2>
+        <div className="h-64 flex items-end justify-around gap-2">
+          {monthlyData.map((height, idx) => (
+            <div
+              key={idx}
+              className="flex-1 flex flex-col items-center gap-2"
+            >
+              <div
+                className="w-full rounded-t transition-all cursor-pointer"
+                style={{
+                  height: `${height}%`,
+                  backgroundColor: '#E50914',
+                }}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.filter = 'brightness(1.2)')
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.filter = 'brightness(1)')
+                }
+              />
+              <span
+                className="text-xs"
+                style={{ color: '#F5F5F5', opacity: 0.5 }}
+              >
+                {idx + 1}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </Container>
   );

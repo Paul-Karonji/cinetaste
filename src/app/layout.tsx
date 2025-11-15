@@ -16,7 +16,9 @@ export default function RootLayout({
     <html lang="en">
       <body className="antialiased bg-background text-accent">
         <Navbar />
-        {children}
+        <main className="pt-24 pb-12">
+          {children}
+        </main>
       </body>
     </html>
   );
