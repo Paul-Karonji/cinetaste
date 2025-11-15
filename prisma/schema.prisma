@@ -1,0 +1,216 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  username      String    @unique
+  password      String
+  name          String?
+  bio           String?
+  avatar        String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  watchList     WatchListItem[]
+  history       WatchHistory[]
+  ratings       Rating[]
+  reviews       Review[]
+
+  // Social features
+  friendsInitiated  Friendship[] @relation("FriendshipInitiator")
+  friendsReceived   Friendship[] @relation("FriendshipReceiver")
+  permissions       UserPermission[]
+  permissionsGranted UserPermission[] @relation("PermissionGranter")
+
+  @@index([email])
+  @@index([username])
+}
+
+enum TitleType {
+  MOVIE
+  SERIES
+  ANIME
+  ANIMATION
+}
+
+model Title {
+  id            String    @id @default(cuid())
+  tmdbId        Int       @unique
+  type          TitleType
+  title         String
+  originalTitle String?
+  overview      String?
+  posterPath    String?
+  backdropPath  String?
+  releaseDate   DateTime?
+  runtime       Int?      // in minutes
+  genres        String[]  // JSON array of genre IDs/names
+  cast          String[]  // JSON array
+  crew          String[]  // JSON array
+  voteAverage   Float?
+  voteCount     Int?
+
+  // Series specific
+  numberOfSeasons   Int?
+  numberOfEpisodes  Int?
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  watchListItems WatchListItem[]
+  history        WatchHistory[]
+  ratings        Rating[]
+  reviews        Review[]
+
+  @@index([tmdbId])
+  @@index([type])
+}
+
+model WatchListItem {
+  id          String    @id @default(cuid())
+  userId      String
+  titleId     String
+  category    String?   // Custom category like "Weekend Picks", "Anime Queue"
+  priority    Int       @default(0)
+  addedAt     DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, titleId])
+  @@index([userId])
+}
+
+model WatchHistory {
+  id              String    @id @default(cuid())
+  userId          String
+  titleId         String
+  watchedAt       DateTime  @default(now())
+
+  // Series specific tracking
+  currentSeason   Int?
+  currentEpisode  Int?
+  completed       Boolean   @default(false)
+
+  notes           String?
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([watchedAt])
+}
+
+model Rating {
+  id          String    @id @default(cuid())
+  userId      String
+  titleId     String
+  rating      Float     // 1-5 stars
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
+  moodTags    MoodTag[]
+
+  @@unique([userId, titleId])
+  @@index([userId])
+}
+
+enum MoodType {
+  LAUGH
+  CRY
+  ROMANTIC
+  ACTION
+  SCIFI
+  MIND_BLOWING
+  DARK_MYSTERIOUS
+  FEEL_GOOD
+  EMOTIONAL
+  SLOW_BURN
+  THRILLER
+}
+
+model MoodTag {
+  id          String    @id @default(cuid())
+  ratingId    String
+  mood        MoodType
+
+  rating      Rating    @relation(fields: [ratingId], references: [id], onDelete: Cascade)
+
+  @@index([ratingId])
+}
+
+model Review {
+  id          String    @id @default(cuid())
+  userId      String
+  titleId     String
+  content     String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       Title     @relation(fields: [titleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, titleId])
+  @@index([userId])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model Friendship {
+  id              String            @id @default(cuid())
+  initiatorId     String
+  receiverId      String
+  status          FriendshipStatus  @default(PENDING)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  initiator       User              @relation("FriendshipInitiator", fields: [initiatorId], references: [id], onDelete: Cascade)
+  receiver        User              @relation("FriendshipReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@unique([initiatorId, receiverId])
+  @@index([initiatorId])
+  @@index([receiverId])
+}
+
+enum PermissionType {
+  VIEW_WATCHLIST
+  VIEW_RATINGS
+  VIEW_REVIEWS
+  VIEW_ACTIVITY
+  VIEW_PREFERENCES
+}
+
+model UserPermission {
+  id          String          @id @default(cuid())
+  granterId   String
+  userId      String
+  permission  PermissionType
+  granted     Boolean         @default(false)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  granter     User            @relation("PermissionGranter", fields: [granterId], references: [id], onDelete: Cascade)
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([granterId, userId, permission])
+  @@index([granterId])
+  @@index([userId])
+}
