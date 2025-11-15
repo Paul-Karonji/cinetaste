@@ -6,17 +6,17 @@ import MoodBadge from '@/components/MoodBadge';
 import { MoodType } from '@/types';
 
 const moods: MoodType[] = [
-  'LAUGH',
-  'CRY',
-  'ROMANTIC',
-  'ACTION',
-  'SCIFI',
-  'MIND_BLOWING',
-  'DARK_MYSTERIOUS',
-  'FEEL_GOOD',
-  'EMOTIONAL',
-  'SLOW_BURN',
-  'THRILLER',
+  MoodType.LAUGH,
+  MoodType.CRY,
+  MoodType.ROMANTIC,
+  MoodType.ACTION,
+  MoodType.SCIFI,
+  MoodType.MIND_BLOWING,
+  MoodType.DARK_MYSTERIOUS,
+  MoodType.FEEL_GOOD,
+  MoodType.EMOTIONAL,
+  MoodType.SLOW_BURN,
+  MoodType.THRILLER,
 ];
 
 export default function MoodPage() {

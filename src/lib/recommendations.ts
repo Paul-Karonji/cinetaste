@@ -85,7 +85,7 @@ export async function getMoodBasedRecommendations({
       orderBy: { rating: 'desc' },
     });
 
-    return recommendations.map((r) => r.title);
+    return recommendations.map((r: any) => r.title);
   } catch (error) {
     console.error('Error generating mood recommendations:', error);
     return [];
@@ -202,7 +202,7 @@ export async function calculateUserStats(userId: string) {
     ]);
 
     // Calculate total hours watched
-    const totalHours = watchHistory.reduce((sum, item) => {
+    const totalHours = watchHistory.reduce((sum: number, item: any) => {
       return sum + (item.title.runtime || 0);
     }, 0) / 60;
 
@@ -210,14 +210,14 @@ export async function calculateUserStats(userId: string) {
     const genrePreferences = analyzeGenrePreferences(ratings);
     const favoriteGenres = genrePreferences.slice(0, 5).map((genre, index) => ({
       genre,
-      count: ratings.filter((r) => r.title.genres?.includes(genre)).length,
+      count: ratings.filter((r: any) => r.title.genres?.includes(genre)).length,
     }));
 
     // Top rated titles
     const topRated = ratings
-      .sort((a, b) => b.rating - a.rating)
+      .sort((a: any, b: any) => b.rating - a.rating)
       .slice(0, 10)
-      .map((r) => r.title);
+      .map((r: any) => r.title);
 
     return {
       totalWatched: watchHistory.length,
